@@ -8,6 +8,17 @@ from rango.forms import UserForm, UserProfileForm
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
+
+@login_required
+def user_logout(request):
+	logout(request)
+	return HttpResponseRedirect(reverse('index'))
+
+@login_required
+def restricted(request):
+	return HttpResponse("Since you're logged in, you can see this text!")
 
 def user_login(request):
 	if request.method == 'POST':
@@ -53,7 +64,7 @@ def register(request):
 				  'profile_form':profile_form,
 				  'registered':registered})
 	
-
+@login_required
 def add_page(request, category_name_slug):
 	try:
 		category = Category.objects.get(slug=category_name_slug)
@@ -76,6 +87,7 @@ def add_page(request, category_name_slug):
 	context_dict = {'form':form, 'category':category}
 	return render(request, 'rango/add_page.html', context_dict)
 
+@login_required
 def add_category(request):
 	form = CategoryForm()
 	
